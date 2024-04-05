@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "147472818568",
+    "project_id": "android-class-54912",
+    "storage_bucket": "android-class-54912.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:147472818568:android:1ddcb9f5b308bc25a41a3d",
+        "android_client_info": {
+          "package_name": "com.codercampy.firebaseclass"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcA6JUlWHVqufPVYGdETwUa56LpsUpr0Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
