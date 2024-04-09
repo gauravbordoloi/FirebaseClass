@@ -11,6 +11,7 @@ import com.codercampy.firebaseclass.chat.ChatModel
 import com.codercampy.firebaseclass.databinding.FragmentHomeBinding
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
@@ -55,6 +56,7 @@ class HomeFragment : Fragment() {
 
         //Get realtime updates
         Firebase.firestore.collection("chats")
+            .orderBy("timestamp", Query.Direction.ASCENDING)
             .addSnapshotListener { value, e ->
                 if (e != null) {
                     Log.e("REALTIME", "Listen failed.", e)
@@ -69,8 +71,10 @@ class HomeFragment : Fragment() {
                     }
                 }
                 adapter.addChats(chats)
+                binding.recyclerView.postDelayed({
+                    binding.recyclerView.scrollToPosition(adapter.itemCount)
+                }, 100)
             }
-
 
 
 //        binding.tvTitle.text = """
@@ -110,7 +114,8 @@ class HomeFragment : Fragment() {
                 binding.etChat.text = null
             }
             .addOnFailureListener { e ->
-                Toast.makeText(requireContext(), "Unable to send message", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Unable to send message", Toast.LENGTH_SHORT)
+                    .show()
             }
 
     }
