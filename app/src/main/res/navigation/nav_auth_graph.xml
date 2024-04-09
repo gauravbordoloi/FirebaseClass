@@ -21,6 +21,9 @@
         <argument
             android:name="verificationId"
             app:argType="string" />
+        <argument
+            android:name="name"
+            app:argType="string" />
     </fragment>
 
 </navigation>

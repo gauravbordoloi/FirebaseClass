@@ -36,53 +36,55 @@ class PhoneNumberLoginFragment : Fragment() {
         binding.btnContinue.setOnClickListener {
 
             val phone = binding.inputPhone.editText?.text?.toString()?.trim()
+            val name = binding.inputName.editText?.text?.toString()?.trim()
 
-            if (phone?.length == 10) {
-
-                val options = PhoneAuthOptions.newBuilder(Firebase.auth)
-                    .setPhoneNumber("+91" + phone) // Phone number to verify
-                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                    .setActivity(requireActivity())
-                    .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                        override fun onVerificationCompleted(p0: PhoneAuthCredential) {
-                            signInWithPhoneAuthCredential(p0)
-                        }
-
-                        override fun onVerificationFailed(p0: FirebaseException) {
-                            Log.e("onVerificationFailed", "onVerificationFailed", p0)
-                        }
-
-                        override fun onCodeSent(
-                            verificationId: String,
-                            p1: PhoneAuthProvider.ForceResendingToken
-                        ) {
-                            super.onCodeSent(verificationId, p1)
-                            Toast.makeText(requireContext(), "OTP Sent", Toast.LENGTH_SHORT).show()
-
-                            findNavController().navigate(PhoneNumberLoginFragmentDirections.actionPhoneNumberLoginFragmentToOtpFragment(verificationId))
-
-                        }
-                    })
-                    .build()
-                PhoneAuthProvider.verifyPhoneNumber(options)
-
+            if (name.isNullOrEmpty()) {
+                Toast.makeText(requireContext(), "Please enter a name", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            if (phone?.length != 10) {
+                Toast.makeText(
+                    requireContext(),
+                    "Please enter a valid phone number",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            val options = PhoneAuthOptions.newBuilder(Firebase.auth)
+                .setPhoneNumber("+91" + phone) // Phone number to verify
+                .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                .setActivity(requireActivity())
+                .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                    override fun onVerificationCompleted(p0: PhoneAuthCredential) {
+                        (requireActivity() as AuthActivity).signInWithPhoneAuthCredential(name, p0)
+                    }
+
+                    override fun onVerificationFailed(p0: FirebaseException) {
+                        Log.e("onVerificationFailed", "onVerificationFailed", p0)
+                    }
+
+                    override fun onCodeSent(
+                        verificationId: String,
+                        p1: PhoneAuthProvider.ForceResendingToken
+                    ) {
+                        super.onCodeSent(verificationId, p1)
+                        Toast.makeText(requireContext(), "OTP Sent", Toast.LENGTH_SHORT).show()
+
+                        findNavController().navigate(
+                            PhoneNumberLoginFragmentDirections.actionPhoneNumberLoginFragmentToOtpFragment(
+                                verificationId, name
+                            )
+                        )
+
+                    }
+                })
+                .build()
+            PhoneAuthProvider.verifyPhoneNumber(options)
 
         }
 
-    }
-
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        Firebase.auth.signInWithCredential(credential).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val user = task.result?.user
-                Toast.makeText(requireContext(), "User logged in", Toast.LENGTH_SHORT).show()
-            } else {
-                val error = task.exception?.message
-                Log.e("signIn", "signIn", task.exception)
-                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
 

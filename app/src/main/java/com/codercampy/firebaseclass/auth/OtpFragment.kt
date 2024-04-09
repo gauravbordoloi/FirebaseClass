@@ -32,6 +32,7 @@ class OtpFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val verificationId = OtpFragmentArgs.fromBundle(requireArguments()).verificationId
+        val name = OtpFragmentArgs.fromBundle(requireArguments()).name
 
         binding.btnVerify.setOnClickListener {
 
@@ -43,27 +44,10 @@ class OtpFragment: Fragment() {
             }
 
             val credential = PhoneAuthProvider.getCredential(verificationId, otp)
-            signInWithPhoneAuthCredential(credential)
+            (requireActivity() as AuthActivity).signInWithPhoneAuthCredential(name, credential)
 
         }
 
-    }
-
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        Firebase.auth.signInWithCredential(credential).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val user = task.result?.user
-                Toast.makeText(requireContext(), "User logged in", Toast.LENGTH_SHORT).show()
-
-                startActivity(Intent(requireContext(), MainActivity::class.java))
-                requireActivity().finish()
-
-            } else {
-                val error = task.exception?.message
-                Log.e("signIn", "signIn", task.exception)
-                Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
-            }
-        }
     }
 
 }
