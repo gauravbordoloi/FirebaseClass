@@ -70,9 +70,11 @@ class HomeFragment : Fragment() {
                         chats.add(chat)
                     }
                 }
+                Log.e("adapter.itemCount", adapter.itemCount.toString())
                 adapter.addChats(chats)
                 binding.recyclerView.postDelayed({
-                    binding.recyclerView.scrollToPosition(adapter.itemCount)
+                    Log.e("adapter.itemCount", adapter.itemCount.toString())
+                    binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
                 }, 100)
             }
 

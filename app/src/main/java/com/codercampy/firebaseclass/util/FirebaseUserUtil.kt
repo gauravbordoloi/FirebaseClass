@@ -1,5 +1,6 @@
 package com.codercampy.firebaseclass.util
 
+import android.net.Uri
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.auth.userProfileChangeRequest
 import com.google.firebase.ktx.Firebase
@@ -23,6 +24,7 @@ object FirebaseUserUtil {
         Firebase.auth.currentUser?.updateProfile(
             userProfileChangeRequest {
                 displayName = name
+                setPhotoUri(Uri.parse(""))
             }
         )?.addOnCompleteListener {
             cb(it.isSuccessful)
