@@ -9,16 +9,12 @@
     android:layout_marginStart="8dp"
     android:layout_marginEnd="100dp">
 
-    <TextView
-        android:id="@+id/tv_initial"
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/iv_image"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:layout_gravity="top"
-        android:background="@drawable/bg_circle"
-        android:gravity="center"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        tools:text="AB" />
+        app:shapeAppearanceOverlay="@style/customRoundedImageView"
+        tools:src="@color/black" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

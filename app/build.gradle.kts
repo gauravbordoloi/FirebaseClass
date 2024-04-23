@@ -70,4 +70,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-messaging-ktx")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
+    implementation("com.github.yalantis:ucrop:2.2.9")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("com.github.amoskorir:avatarimagegenerator:1.5.0")
 }

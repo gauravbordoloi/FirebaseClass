@@ -1,13 +1,17 @@
 package com.codercampy.firebaseclass
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.avatarfirst.avatargenlib.AvatarGenerator
+import com.bumptech.glide.Glide
 import com.codercampy.firebaseclass.chat.ChatModel
 import com.codercampy.firebaseclass.databinding.ItemChatMineBinding
 import com.codercampy.firebaseclass.databinding.ItemChatOtherBinding
 import com.codercampy.firebaseclass.util.formatTimestampForChat
+import com.google.android.material.internal.TextDrawableHelper
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
@@ -59,14 +63,26 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             val chat = chats[position]
 
             if (position ==  0 || chats[position - 1].user["id"] != chat.user["id"]) {
-                holder.binding.tvInitial.visibility = View.VISIBLE
-                holder.binding.tvInitial.text = buildString {
+                holder.binding.ivImage.visibility = View.VISIBLE
+
+                val avatar = AvatarGenerator.AvatarBuilder(holder.binding.root.context)
+                    .setLabel(buildString {
                     chat.user["name"]?.split(" ")?.take(2)?.forEach {
                         append(it.getOrNull(0)?.uppercase())
                     }
-                }
+                }).setAvatarSize(120)
+                    .setTextSize(30)
+                    .toSquare()
+                    .toCircle()
+                    .setBackgroundColor(Color.RED)
+                    .build()
+
+                Glide.with(holder.binding.ivImage)
+                    .load(chat.user["image"])
+                    .error(avatar)
+                    .into(holder.binding.ivImage)
             } else {
-                holder.binding.tvInitial.visibility = View.INVISIBLE
+                holder.binding.ivImage.visibility = View.INVISIBLE
             }
 
             holder.bind(chat)

@@ -107,6 +107,7 @@ class HomeFragment : Fragment() {
             buildMap {
                 put("id", user.uid)
                 put("name", user.displayName)
+                put("image", user.photoUrl?.toString())
             }
         )
 

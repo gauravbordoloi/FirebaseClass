@@ -20,11 +20,15 @@ object FirebaseUserUtil {
 //        return a + b
 //    }
 
-    fun updateUser(name: String, cb: (Boolean) -> Unit) {
+    fun updateUser(name: String? = null, photo: Uri? = null, cb: (Boolean) -> Unit) {
         Firebase.auth.currentUser?.updateProfile(
             userProfileChangeRequest {
-                displayName = name
-                setPhotoUri(Uri.parse(""))
+                if (!name.isNullOrEmpty()) {
+                    displayName = name
+                }
+                if (photo != null) {
+                    photoUri = photo
+                }
             }
         )?.addOnCompleteListener {
             cb(it.isSuccessful)
