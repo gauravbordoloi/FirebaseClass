@@ -39,7 +39,7 @@ class UsersFragment : Fragment() {
         binding.recyclerView.adapter = adapter
 
         Firebase.firestore.collection("users")
-            .whereNotEqualTo("id", Firebase.auth.currentUser?.uid)
+//            .whereNotEqualTo("id", Firebase.auth.currentUser?.uid)
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { value, e ->
                 if (e != null) {
@@ -51,7 +51,9 @@ class UsersFragment : Fragment() {
                 for (doc in value!!.documentChanges) {
                     if (doc.type == DocumentChange.Type.ADDED) {
                         val user = doc.document.toObject(UserModel::class.java)
-                        users.add(user)
+                        if (user.id != Firebase.auth.currentUser?.uid) {
+                            users.add(user)
+                        }
                     }
                 }
                 Log.e("adapter.itemCount", adapter.itemCount.toString())
