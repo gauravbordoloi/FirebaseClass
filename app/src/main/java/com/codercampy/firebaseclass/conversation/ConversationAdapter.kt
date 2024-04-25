@@ -40,6 +40,9 @@ class ConversationAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(conversations[position], position)
+        holder.itemView.setOnClickListener {
+            listener.onConversationClicked(conversations[position])
+        }
     }
 
 

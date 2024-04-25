@@ -33,6 +33,9 @@ class UserAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(users[position], position)
+        holder.itemView.setOnClickListener {
+            listener.onUserClicked(users[position])
+        }
     }
 
 
