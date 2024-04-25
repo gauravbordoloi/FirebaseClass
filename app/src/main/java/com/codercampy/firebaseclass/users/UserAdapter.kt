@@ -12,6 +12,7 @@ class UserAdapter : RecyclerView.Adapter<ViewHolder>() {
     private lateinit var listener: UserAdapterListener
 
     fun setUsers(users: List<UserModel>) {
+        this.users.clear()
         this.users.addAll(users)
         notifyDataSetChanged()
     }
