@@ -7,14 +7,18 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.codercampy.firebaseclass.MainActivity
 import com.codercampy.firebaseclass.databinding.ActivityAuthBinding
+import com.codercampy.firebaseclass.users.UserModel
 import com.codercampy.firebaseclass.util.FirebaseUserUtil
+import com.codercampy.firebaseclass.util.SharedPref
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class AuthActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAuthBinding
+    private val sharedPref: SharedPref by lazy { SharedPref(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +40,10 @@ class AuthActivity : AppCompatActivity() {
     fun signInWithPhoneAuthCredential(name: String, credential: PhoneAuthCredential) {
         Firebase.auth.signInWithCredential(credential).addOnCompleteListener { task ->
             if (task.isSuccessful) {
+                val user = Firebase.auth.currentUser ?: return@addOnCompleteListener
+                val userModel = UserModel(user.uid, user.phoneNumber!!, name)
+                sharedPref.setUser(userModel)
+
                 FirebaseUserUtil.updateUser(name) {
                     Toast.makeText(this, "User logged in", Toast.LENGTH_SHORT).show()
                     goToHome()

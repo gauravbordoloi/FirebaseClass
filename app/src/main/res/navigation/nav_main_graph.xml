@@ -14,6 +14,10 @@
         android:id="@+id/profileFragment"
         android:name="com.codercampy.firebaseclass.profile.ProfileFragment"
         android:label="ProfileFragment" />
+    <fragment
+        android:id="@+id/usersFragment"
+        android:name="com.codercampy.firebaseclass.users.UsersFragment"
+        android:label="UsersFragment" />
 
 
 </navigation>

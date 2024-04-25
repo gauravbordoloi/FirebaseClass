@@ -13,9 +13,11 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.codercampy.firebaseclass.MainActivity
 import com.codercampy.firebaseclass.R
 import com.codercampy.firebaseclass.databinding.FragmentProfileBinding
 import com.codercampy.firebaseclass.util.FirebaseUserUtil
+import com.codercampy.firebaseclass.util.SharedPref
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -26,6 +28,7 @@ import java.io.File
 class ProfileFragment : Fragment() {
 
     private lateinit var binding: FragmentProfileBinding
+    private val sharedPref by lazy { SharedPref(requireContext()) }
 
     private val pickMedia =
         registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
@@ -61,6 +64,7 @@ class ProfileFragment : Fragment() {
             val name = binding.inputName.editText?.text?.toString()?.trim()
             if (!name.isNullOrEmpty()) {
                 FirebaseUserUtil.updateUser(name) {
+                    (requireActivity() as MainActivity).updateUser()
                     Toast.makeText(requireContext(), "Profile updated", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -69,10 +73,10 @@ class ProfileFragment : Fragment() {
     }
 
     private fun initViews() {
-        Firebase.auth.currentUser?.let { user ->
-            Glide.with(binding.ivProfile).load(user.photoUrl).error(R.drawable.ic_profile)
+        sharedPref.getUser()?.let { user ->
+            Glide.with(binding.ivProfile).load(user.photo).error(R.drawable.ic_profile)
                 .into(binding.ivProfile)
-            binding.inputName.editText?.setText(user.displayName)
+            binding.inputName.editText?.setText(user.name)
         }
     }
 
@@ -96,6 +100,7 @@ class ProfileFragment : Fragment() {
         }.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 FirebaseUserUtil.updateUser(photo = task.result) {
+                    (requireActivity() as MainActivity).updateUser()
                     Toast.makeText(
                         requireContext(),
                         "Photo uploaded successfully",
