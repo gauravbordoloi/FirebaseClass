@@ -22,6 +22,20 @@ object FirebaseUserUtil {
 //        return a + b
 //    }
 
+    fun updateUser(userModel: UserModel, cb: (Boolean) -> Unit) {
+        val user = Firebase.auth.currentUser ?: return
+        Firebase.firestore
+            .collection("users")
+            .document(user.uid)
+            .set(
+                userModel,
+                SetOptions.merge()
+            )
+            .addOnCompleteListener {
+                cb(it.isSuccessful)
+            }
+    }
+
     fun updateUser(name: String? = null, photo: Uri? = null, cb: (Boolean) -> Unit) {
         val user = Firebase.auth.currentUser ?: return
         Firebase.firestore

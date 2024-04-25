@@ -44,7 +44,7 @@ class AuthActivity : AppCompatActivity() {
                 val userModel = UserModel(user.uid, user.phoneNumber!!, name)
                 sharedPref.setUser(userModel)
 
-                FirebaseUserUtil.updateUser(name) {
+                FirebaseUserUtil.updateUser(userModel) {
                     Toast.makeText(this, "User logged in", Toast.LENGTH_SHORT).show()
                     goToHome()
                 }
