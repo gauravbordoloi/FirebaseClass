@@ -10,12 +10,14 @@ import com.bumptech.glide.Glide
 import com.codercampy.firebaseclass.chat.ChatModel
 import com.codercampy.firebaseclass.databinding.ItemChatMineBinding
 import com.codercampy.firebaseclass.databinding.ItemChatOtherBinding
+import com.codercampy.firebaseclass.users.UserModel
 import com.codercampy.firebaseclass.util.formatTimestampForChat
-import com.google.android.material.internal.TextDrawableHelper
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MessageAdapter(
+    private val otherUser: UserModel
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val chats = arrayListOf<ChatModel>()
 
@@ -29,7 +31,7 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (chats[position].user["id"] == Firebase.auth.currentUser?.uid) {
+        return if (chats[position].userId == Firebase.auth.currentUser?.uid) {
             ITEM_MINE
         } else {
             ITEM_OTHER
@@ -62,15 +64,15 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         } else if (holder is ChatOtherViewBinder) {
             val chat = chats[position]
 
-            if (position ==  0 || chats[position - 1].user["id"] != chat.user["id"]) {
+            if (position == 0 || chats[position - 1].userId != chat.userId) {
                 holder.binding.ivImage.visibility = View.VISIBLE
 
                 val avatar = AvatarGenerator.AvatarBuilder(holder.binding.root.context)
                     .setLabel(buildString {
-                    chat.user["name"]?.split(" ")?.take(2)?.forEach {
-                        append(it.getOrNull(0)?.uppercase())
-                    }
-                }).setAvatarSize(120)
+                        otherUser.name?.split(" ")?.take(2)?.forEach {
+                            append(it.getOrNull(0)?.uppercase())
+                        }
+                    }).setAvatarSize(120)
                     .setTextSize(30)
                     .toSquare()
                     .toCircle()
@@ -78,23 +80,24 @@ class MessageAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     .build()
 
                 Glide.with(holder.binding.ivImage)
-                    .load(chat.user["image"])
+                    .load(otherUser.photo)
                     .error(avatar)
                     .into(holder.binding.ivImage)
             } else {
                 holder.binding.ivImage.visibility = View.INVISIBLE
             }
 
-            holder.bind(chat)
+            holder.bind(chat, otherUser)
         }
     }
 
 }
 
-class ChatOtherViewBinder(val binding: ItemChatOtherBinding) : RecyclerView.ViewHolder(binding.root) {
+class ChatOtherViewBinder(val binding: ItemChatOtherBinding) :
+    RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(chat: ChatModel) {
-        binding.tvName.text = chat.user["name"]
+    fun bind(chat: ChatModel, otherUser: UserModel) {
+        binding.tvName.text = otherUser.name
         binding.tvMessage.text = chat.message
         binding.tvTime.text = formatTimestampForChat(chat.timestamp)
 
@@ -106,7 +109,6 @@ class ChatMineViewBinder(val binding: ItemChatMineBinding) : RecyclerView.ViewHo
 
     fun bind(chat: ChatModel) {
 
-        binding.tvName.text = chat.user["name"]
         binding.tvMessage.text = chat.message
         binding.tvTime.text = formatTimestampForChat(chat.timestamp)
 

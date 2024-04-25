@@ -12,24 +12,13 @@
     android:padding="8dp">
 
     <TextView
-        android:id="@+id/tv_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Gaurav" />
-
-    <TextView
         android:id="@+id/tv_message"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_name"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Hey there how are you" />
 
     <TextView

@@ -9,10 +9,15 @@ import com.codercampy.firebaseclass.databinding.ItemUserBinding
 class UserAdapter : RecyclerView.Adapter<ViewHolder>() {
 
     private val users: ArrayList<UserModel> = ArrayList()
+    private lateinit var listener: UserAdapterListener
 
     fun setUsers(users: List<UserModel>) {
         this.users.addAll(users)
         notifyDataSetChanged()
+    }
+
+    fun setListener(listener: UserAdapterListener) {
+        this.listener = listener
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -42,3 +47,9 @@ class ViewHolder(val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding
     }
 
 }
+
+ fun interface UserAdapterListener {
+
+     fun onUserClicked(userModel: UserModel)
+
+ }

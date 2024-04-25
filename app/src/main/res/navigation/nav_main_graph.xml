@@ -8,8 +8,12 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.codercampy.firebaseclass.HomeFragment"
-        android:label="HomeFragment" />
+        android:name="com.codercampy.firebaseclass.conversation.HomeFragment"
+        android:label="HomeFragment" >
+        <action
+            android:id="@+id/action_homeFragment_to_conversationChatFragment"
+            app:destination="@id/conversationChatFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         android:name="com.codercampy.firebaseclass.profile.ProfileFragment"
@@ -17,7 +21,19 @@
     <fragment
         android:id="@+id/usersFragment"
         android:name="com.codercampy.firebaseclass.users.UsersFragment"
-        android:label="UsersFragment" />
+        android:label="UsersFragment" >
+        <action
+            android:id="@+id/action_usersFragment_to_conversationChatFragment"
+            app:destination="@id/conversationChatFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/conversationChatFragment"
+        android:name="com.codercampy.firebaseclass.chat.ConversationChatFragment"
+        android:label="ConversationChatFragment" >
+        <argument
+            android:name="extras"
+            app:argType="com.codercampy.firebaseclass.conversation.Conversation" />
+    </fragment>
 
 
 </navigation>

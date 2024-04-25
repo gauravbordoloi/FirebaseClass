@@ -1,4 +1,4 @@
-package com.codercampy.firebaseclass
+package com.codercampy.firebaseclass.chat
 
 import android.os.Bundle
 import android.util.Log
@@ -7,33 +7,44 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.codercampy.firebaseclass.chat.ChatModel
-import com.codercampy.firebaseclass.databinding.FragmentHomeBinding
+import com.bumptech.glide.Glide
+import com.codercampy.firebaseclass.MessageAdapter
+import com.codercampy.firebaseclass.conversation.Conversation
+import com.codercampy.firebaseclass.databinding.FragmentConversationChatBinding
+import com.codercampy.firebaseclass.users.UserModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class HomeFragment : Fragment() {
+class ConversationChatFragment : Fragment() {
 
-    private lateinit var binding: FragmentHomeBinding
+    private lateinit var binding: FragmentConversationChatBinding
     private lateinit var adapter: MessageAdapter
+    private lateinit var conversation: Conversation
+    private var otherUser: UserModel? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentHomeBinding.inflate(layoutInflater)
+        binding = FragmentConversationChatBinding.inflate(layoutInflater)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        adapter = MessageAdapter()
-        binding.recyclerView.adapter = adapter
+        val user = Firebase.auth.currentUser ?: return
+        conversation = ConversationChatFragmentArgs.fromBundle(requireArguments()).extras
+
+        if (conversation.user1 == user.uid) {
+            fetchOtherUser(conversation.user2)
+        } else {
+            fetchOtherUser(conversation.user1)
+        }
 
         binding.btnSend.setOnClickListener {
             sendMessage()
@@ -55,7 +66,26 @@ class HomeFragment : Fragment() {
 //            }
 
         //Get realtime updates
-        Firebase.firestore.collection("chats")
+
+
+//        binding.tvTitle.text = """
+//            Name - ${user?.displayName}
+//            Phone - ${user?.phoneNumber}
+//            Last Logged In - ${formatTimestamp(user?.metadata?.lastSignInTimestamp)}
+//        """.trimIndent()
+//
+//        binding.btnLogout.setOnClickListener {
+//            Firebase.auth.signOut()
+//            startActivity(Intent(requireContext(), AuthActivity::class.java))
+//            requireActivity().finish()
+//        }
+
+    }
+
+    private fun listenMessages() {
+        Firebase.firestore.collection("conversations")
+            .document(conversation.id)
+            .collection("chats")
             .orderBy("timestamp", Query.Direction.ASCENDING)
             .addSnapshotListener { value, e ->
                 if (e != null) {
@@ -77,20 +107,6 @@ class HomeFragment : Fragment() {
                     binding.recyclerView.scrollToPosition(adapter.itemCount - 1)
                 }, 100)
             }
-
-
-//        binding.tvTitle.text = """
-//            Name - ${user?.displayName}
-//            Phone - ${user?.phoneNumber}
-//            Last Logged In - ${formatTimestamp(user?.metadata?.lastSignInTimestamp)}
-//        """.trimIndent()
-//
-//        binding.btnLogout.setOnClickListener {
-//            Firebase.auth.signOut()
-//            startActivity(Intent(requireContext(), AuthActivity::class.java))
-//            requireActivity().finish()
-//        }
-
     }
 
     private fun sendMessage() {
@@ -102,16 +118,14 @@ class HomeFragment : Fragment() {
 
         val chat = ChatModel(
             System.currentTimeMillis().toString(),
+            user.uid,
             System.currentTimeMillis(),
-            text,
-            buildMap {
-                put("id", user.uid)
-                put("name", user.displayName)
-                put("image", user.photoUrl?.toString())
-            }
+            text
         )
 
-        Firebase.firestore.collection("chats")
+        Firebase.firestore.collection("conversations")
+            .document(conversation.id)
+            .collection("chats")
             .add(chat)
             .addOnSuccessListener { documentReference ->
                 binding.etChat.text = null
@@ -121,6 +135,20 @@ class HomeFragment : Fragment() {
                     .show()
             }
 
+    }
+
+    private fun fetchOtherUser(userId: String) {
+        Firebase.firestore.collection("users").document(userId).get()
+            .addOnCompleteListener {
+                otherUser = it.result.toObject(UserModel::class.java)
+                binding.tvName.text = otherUser?.name
+                Glide.with(binding.ivProfile).load(otherUser?.photo).into(binding.ivProfile)
+
+                adapter = MessageAdapter(otherUser!!)
+                binding.recyclerView.adapter = adapter
+
+                listenMessages()
+            }
     }
 
 }
