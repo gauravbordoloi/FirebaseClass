@@ -12,6 +12,7 @@ import com.codercampy.firebaseclass.chat.ChatModel
 import com.codercampy.firebaseclass.databinding.FragmentHomeBinding
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.Filter
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -33,6 +34,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val user = Firebase.auth.currentUser ?: return
+
         adapter = ConversationAdapter()
         adapter.setListener {
             findNavController().navigate(HomeFragmentDirections.actionHomeFragmentToConversationChatFragment(it))
@@ -41,6 +44,12 @@ class HomeFragment : Fragment() {
 
         //Get realtime updates
         Firebase.firestore.collection("conversations")
+            .where(
+                Filter.or(
+                    Filter.equalTo("user1", user.uid),
+                    Filter.equalTo("user2", user.uid),
+                )
+            )
             .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { value, e ->
                 if (e != null) {

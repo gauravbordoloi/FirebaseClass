@@ -4,6 +4,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -59,6 +60,16 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             return@setOnItemSelectedListener true
+        }
+
+        navController.addOnDestinationChangedListener { controller, destination, arguments ->
+            when (destination.id) {
+                R.id.conversationChatFragment -> {
+                    binding.bottomNavigation.visibility = View.GONE
+                }
+
+                else -> binding.bottomNavigation.visibility = View.VISIBLE
+            }
         }
 
         askNotificationPermission()
