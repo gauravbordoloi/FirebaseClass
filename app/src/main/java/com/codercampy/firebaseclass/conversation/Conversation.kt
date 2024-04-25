@@ -6,9 +6,9 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Conversation(
-    val id: String,
-    val createdAt: Long,
-    val user1: String,
-    val user2: String,
-    val chats: List<ChatModel>
+    val id: String = "",
+    val createdAt: Long = 0L,
+    val user1: String = "",
+    val user2: String = "",
+    val chats: List<ChatModel> = emptyList()
 ) : Parcelable
